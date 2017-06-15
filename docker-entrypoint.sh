@@ -39,9 +39,9 @@ USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 
 echo "DEPLOY_STATUS: $DEPLOY_STATUS"
-if [[ DEPLOY_STATUS == "success" ]]
+if [[ $DEPLOY_STATUS == "success" ]]
     EMOJI_STATUS=":white_check_mark:"
-    LABEL_STATUS=":white_check_mark:"
+    LABEL_STATUS="succès"
 then
     EMOJI_STATUS=":negative_squared_cross_mark:"
     LABEL_STATUS="erreurs"
@@ -50,4 +50,4 @@ fi
 MSG="$EMOJI_STATUS Application *$PROJECT_PREFIX* déployée avec *$LABEL_STATUS* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
 PAYLOAD=`jq --arg channel '#SLN_tests-rocketchat' --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 
-curl --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
+curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
