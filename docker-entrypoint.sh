@@ -37,4 +37,4 @@ AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
 USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 
-`curl --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d '{ "channel": "#SLN_tests-rocketchat", "text": ":white_check_mark: L`application $PROJECT_PREFIX a été déployée avec succès\n $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID" }' | jq`
+`curl --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d '{ "channel": "#SLN_tests-rocketchat", "text": ":white_check_mark: L application $PROJECT_PREFIX a été déployée avec succès\n $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID" }' | jq`
