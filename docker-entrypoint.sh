@@ -52,3 +52,4 @@ MSG="$EMOJI_STATUS Application *$PROJECT_PREFIX* déployée avec *$LABEL_STATUS*
 PAYLOAD=`jq --arg channel '#SLN_tests-rocketchat' --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 
 curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
+
