@@ -39,10 +39,10 @@ USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 
 echo "DEPLOY_STATUS: $DEPLOY_STATUS"
-if [[ $DEPLOY_STATUS == "success" ]]
+if [[ $DEPLOY_STATUS == "success" ]]; then
     EMOJI_STATUS=":white_check_mark:"
     LABEL_STATUS="succès"
-then
+else
     EMOJI_STATUS=":negative_squared_cross_mark:"
     LABEL_STATUS="erreurs"
 fi
