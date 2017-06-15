@@ -47,7 +47,8 @@ else
 fi
 
 CHAN_APP=SLN_APP_$PROJECT_PREFIX
-CHAN_ENV=SLN_ENV_$CI_ENVIRONMENT_NAME
+ENV_NAME=`echo "$CI_ENVIRONMENT_NAME" | tr '[:upper:]' '[:lower:]'`
+CHAN_ENV=SLN_ENV_$ENV_NAME
 
 printstep "Envoi de la notification Rocketchat sur le chan $CHAN_APP"
 
