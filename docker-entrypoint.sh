@@ -22,6 +22,7 @@ printmainstep "Notification du déploiement du macroservice sur Rocketchat"
 printstep "Vérification des paramètres d'entrée"
 
 init_env
+int_gitlab_api_env 
 check_notify_env
 
 ROCKETCHAT_API_URL=$ROCKETCHAT_URL/api/v1
