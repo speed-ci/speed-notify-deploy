@@ -16,7 +16,7 @@ check_notify_env () {
         printerror "La variable d'environnement ROCKETCHAT_PASSWORD doit être renseignée au lancement du container (ex: -e ROCKETCHAT_PASSWORD=XXXXXXXX)"
         exit 1
     fi    
-}
+8}
 
 printmainstep "Notification du déploiement du macroservice sur Rocketchat"
 printstep "Vérification des paramètres d'entrée"
@@ -38,7 +38,6 @@ AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
 USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 
-echo "DEPLOY_STATUS: $DEPLOY_STATUS"
 if [[ $DEPLOY_STATUS == "success" ]]; then
     EMOJI_STATUS=":white_check_mark:"
     LABEL_STATUS="succès"
@@ -46,6 +45,8 @@ else
     EMOJI_STATUS=":negative_squared_cross_mark:"
     LABEL_STATUS="erreurs"
 fi
+
+printstep "Envoi de la notification Rocketchat"
 
 MSG="$EMOJI_STATUS Application *$PROJECT_PREFIX* déployée avec *$LABEL_STATUS* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
 PAYLOAD=`jq --arg channel '#SLN_tests-rocketchat' --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
