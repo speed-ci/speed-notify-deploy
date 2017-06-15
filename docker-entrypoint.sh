@@ -46,9 +46,16 @@ else
     LABEL_STATUS="erreurs"
 fi
 
-printstep "Envoi de la notification Rocketchat"
+CHAN_APP=SLN_APP_$PROJECT_PREFIX
+CHAN_ENV=SLN_ENV_$CI_ENVIRONMENT_NAME
+
+printstep "Envoi de la notification Rocketchat sur le chan $CHAN_APP"
 
 MSG="$EMOJI_STATUS Application *$PROJECT_PREFIX* déployée avec *$LABEL_STATUS* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
-PAYLOAD=`jq --arg channel '#SLN_tests-rocketchat' --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
+PAYLOAD=`jq --arg channel "#$CHAN_APP" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
+curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
 
+printstep "Envoi de la notification Rocketchat sur le chan $CHAN_ENV"
+
+PAYLOAD=`jq --arg channel "#$CHAN_ENV" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
