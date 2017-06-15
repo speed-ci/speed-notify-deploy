@@ -38,7 +38,7 @@ AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
 USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 
-MSG=":white_check_mark: L application $PROJECT_PREFIX a été déployée avec succès\n Accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID"
+MSG=":white_check_mark: Application $PROJECT_PREFIX déployée avec succès sur $CI_ENVIRONMENT_NAME (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
 
 PAYLOAD=`jq --arg channel '#SLN_tests-rocketchat' --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 
