@@ -22,7 +22,7 @@ check_notify_env () {
 printmainstep "Notification du déploiement du macroservice sur Rocketchat"
 
 if [[ "$NOTIFY_MUTE" == "true" ]]; then
-    printinf "La notification a été désactivée pour ce projet (variable NOTIFY_MUTE=true)"
+    printinfo "La notification a été désactivée pour ce projet (variable NOTIFY_MUTE=true)"
     exit 0
 fi
 
