@@ -15,17 +15,21 @@ check_notify_env () {
     if [[ -z $ROCKETCHAT_PASSWORD ]];then
         printerror "La variable d'environnement ROCKETCHAT_PASSWORD doit être renseignée au lancement du container (ex: -e ROCKETCHAT_PASSWORD=XXXXXXXX)"
         exit 1
-    fi    
+    fi
+    ROCKETCHAT_API_URL=$ROCKETCHAT_URL/api/v1
 }
 
 printmainstep "Notification du déploiement du macroservice sur Rocketchat"
-printstep "Vérification des paramètres d'entrée"
 
+if [[ "$NOTIFY_MUTE" == "true" ]]; then
+    printinf "La notification a été désactivée pour ce projet (variable NOTIFY_MUTE=true)"
+    exit 0
+fi
+
+printstep "Vérification des paramètres d'entrée"
 init_env
 int_gitlab_api_env 
 check_notify_env
-
-ROCKETCHAT_API_URL=$ROCKETCHAT_URL/api/v1
 
 LOGIN_RESULT=`curl -s --noproxy '*' $ROCKETCHAT_API_URL/login -d "username=$ROCKETCHAT_USER&password=$ROCKETCHAT_PASSWORD"`
 LOGIN_STATUS=`echo $LOGIN_RESULT | jq .status | tr -d '"'`
