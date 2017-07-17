@@ -52,6 +52,7 @@ fi
 PROJECT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects?search=$PROJECT_NAME" | jq --arg project_namespace "$PROJECT_NAMESPACE" '.[] | select(.namespace.name == "\($project_namespace)")' | jq .id`
 LAST_COMMIT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=1&page=1&ref_name=$BRANCH_NAME" | jq .[0].id | tr -d '"'`
 PROJECT_TAG=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/tags" | jq --arg commit_id "$LAST_COMMIT_ID" '.[] | select(.commit.id == "\($commit_id)")' | jq .name | tr -d '"'`
+USER_NAME=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/users/$GITLAB_USER_ID" | jq .username | tr -d '"'`
 
 if [[ $PROJECT_TAG != "" ]]; then APP_DISPLAY_NAME="$APP_DISPLAY_NAME $PROJECT_TAG"; fi
 
@@ -69,7 +70,7 @@ CHAN_ENV=SLN_ENV_$ENV_NAME
 
 printstep "Envoi de la notification Rocketchat sur le chan $CHAN_APP"
 
-MSG="$NOTIFY_MENTION $EMOJI_STATUS Application *$APP_DISPLAY_NAME* déployée avec *$LABEL_STATUS* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
+MSG="$NOTIFY_MENTION $EMOJI_STATUS Application *$APP_DISPLAY_NAME* déployée par *$USER_NAME* avec *$LABEL_STATUS* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
 PAYLOAD=`jq --arg channel "#$CHAN_APP" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
 
