@@ -42,12 +42,15 @@ AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
 USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 PROJECT=${SERVICE_TO_UPDATE:-$PROJECT_PREFIX}
+USER_ID=${TRIGGER_USER_ID:-$GITLAB_USER_ID}
 
 if [[ $CI_ENVIRONMENT_URL != "" ]]; then
     APP_DISPLAY_NAME="[$PROJECT]($CI_ENVIRONMENT_URL)"
 else
     APP_DISPLAY_NAME=$PROJECT
 fi
+
+
 
 PROJECT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects?search=$PROJECT_NAME" | jq --arg project_namespace "$PROJECT_NAMESPACE" '.[] | select(.namespace.name == "\($project_namespace)")' | jq .id`
 LAST_COMMIT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=1&page=1&ref_name=$BRANCH_NAME" | jq .[0].id | tr -d '"'`
