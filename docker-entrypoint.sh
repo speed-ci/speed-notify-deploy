@@ -41,11 +41,12 @@ fi
 AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
 USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
+PROJECT=${SERVICE_TO_DEPLOY:-$PROJECT_PREFIX}
 
 if [[ $CI_ENVIRONMENT_URL != "" ]]; then
-    APP_DISPLAY_NAME="[$PROJECT_PREFIX]($CI_ENVIRONMENT_URL)"
+    APP_DISPLAY_NAME="[$PROJECT]($CI_ENVIRONMENT_URL)"
 else
-    APP_DISPLAY_NAME=$PROJECT_PREFIX
+    APP_DISPLAY_NAME=$PROJECT
 fi
 
 PROJECT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects?search=$PROJECT_NAME" | jq --arg project_namespace "$PROJECT_NAMESPACE" '.[] | select(.namespace.name == "\($project_namespace)")' | jq .id`
