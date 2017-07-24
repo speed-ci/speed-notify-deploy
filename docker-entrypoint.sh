@@ -67,13 +67,15 @@ else
     LABEL_STATUS="erreurs"
 fi
 
+DISPLAY_STATUS="[$LABEL_STATUS]($GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
+
 CHAN_APP=SLN_APP_$PROJECT_PREFIX
 ENV_NAME=`echo "$CI_ENVIRONMENT_NAME" | tr '[:upper:]' '[:lower:]'`
 CHAN_ENV=SLN_ENV_$ENV_NAME
 
 printstep "Envoi de la notification Rocketchat sur le chan $CHAN_APP"
 
-MSG="$NOTIFY_MENTION $EMOJI_STATUS Application *$APP_DISPLAY_NAME* déployée avec *$LABEL_STATUS* par *$USER_NAME* sur *$CI_ENVIRONMENT_NAME* (accès aux logs : $GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
+MSG="$NOTIFY_MENTION $EMOJI_STATUS Application *$APP_DISPLAY_NAME* déployée avec *$DISPLAY_STATUS* par *$USER_NAME* sur *$CI_ENVIRONMENT_NAME*"
 PAYLOAD=`jq --arg channel "#$CHAN_APP" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
 curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $ROCKETCHAT_USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
 
