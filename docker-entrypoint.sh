@@ -77,7 +77,7 @@ printstep "Envoi de la notification Rocketchat sur le chan $CHAN_APP"
 
 MSG="$NOTIFY_MENTION $EMOJI_STATUS Application *$APP_DISPLAY_NAME* déployée avec *$DISPLAY_STATUS* par *$USER_NAME* sur *$CI_ENVIRONMENT_NAME*"
 PAYLOAD=`jq --arg channel "#$CHAN_APP" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
-myCurl --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $ROCKETCHAT_USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
+curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $ROCKETCHAT_USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
 
 printstep "Envoi de la notification Rocketchat sur le chan $CHAN_ENV"
 
