@@ -32,14 +32,14 @@ int_gitlab_api_env
 check_notify_env
 
 LOGIN_RESULT=`curl -s --noproxy '*' $ROCKETCHAT_API_URL/login -d "username=$ROCKETCHAT_USER&password=$ROCKETCHAT_PASSWORD"`
-LOGIN_STATUS=`echo $LOGIN_RESULT | jq .status | tr -d '"'`
+LOGIN_STATUS=`echo $LOGIN_RESULT | jq -r .status`
 if [[ "$LOGIN_STATUS" != "success" ]]; then 
     printerror "Erreur de connection à $ROCKETCHAT_URL avec l'utilisateur $ROCKETCHAT_USER"
     exit 1
 fi
 
-AUTH_TOKEN=`echo $LOGIN_RESULT | jq .data.authToken | tr -d '"'`
-ROCKETCHAT_USER_ID=`echo $LOGIN_RESULT | jq .data.userId | tr -d '"'`
+AUTH_TOKEN=`echo $LOGIN_RESULT | jq -r .data.authToken`
+ROCKETCHAT_USER_ID=`echo $LOGIN_RESULT | jq -r .data.userId`
 PROJECT_PREFIX=${PROJECT_NAME%-*}
 PROJECT=${SERVICE_TO_UPDATE:-$PROJECT_PREFIX}
 GITLAB_USER_ID=${TRIGGER_USER_ID:-$GITLAB_USER_ID}
@@ -53,9 +53,9 @@ fi
 
 
 PROJECT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects?search=$PROJECT_NAME" | jq --arg project_namespace "$PROJECT_NAMESPACE" '.[] | select(.namespace.name == "\($project_namespace)")' | jq .id`
-LAST_COMMIT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=1&page=1&ref_name=$BRANCH_NAME" | jq .[0].id | tr -d '"'`
-PROJECT_TAG=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/tags" | jq --arg commit_id "$LAST_COMMIT_ID" '.[] | select(.commit.id == "\($commit_id)")' | jq .name | tr -d '"'`
-USER_NAME=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/users/$GITLAB_USER_ID" | jq .username | tr -d '"'`
+LAST_COMMIT_ID=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=1&page=1&ref_name=$BRANCH_NAME" | jq -r .[0].id`
+PROJECT_TAG=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/tags" | jq --arg commit_id "$LAST_COMMIT_ID" '.[] | select(.commit.id == "\($commit_id)")' | jq -r .name`
+USER_NAME=`curl --silent --noproxy '*' --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/users/$GITLAB_USER_ID" | jq -r .username`
 
 if [[ $PROJECT_TAG != "" ]]; then APP_DISPLAY_NAME="$APP_DISPLAY_NAME $PROJECT_TAG"; fi
 
