@@ -53,7 +53,7 @@ fi
 
 
 PROJECT_ID=`myCurl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects?search=$PROJECT_NAME" | jq --arg project_namespace "$PROJECT_NAMESPACE" '.[] | select(.namespace.name == "\($project_namespace)") | .id'`
-LAST_COMMIT_ID=myCurl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=25&page=1&ref_name=$BRANCH_NAME" | jq -r '.[] | select(.message | startswith("Merge branch")) | .id' | head -1
+LAST_COMMIT_ID=myCurl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/commits?per_page=25&page=1&ref_name=$BRANCH_NAME" | jq -r '.[] | select(.message | startswith("Merge branch") | not) | .id' | head -1
 PROJECT_TAG=`myCurl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/projects/$PROJECT_ID/repository/tags" | jq -r --arg commit_id "$LAST_COMMIT_ID" '.[] | select(.commit.id == "\($commit_id)") | .name'`
 USER_NAME=`myCurl --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$GITLAB_API_URL/users/$GITLAB_USER_ID" | jq -r .username`
 
