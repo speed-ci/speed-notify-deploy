@@ -82,4 +82,4 @@ curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: 
 printstep "Envoi de la notification Rocketchat sur le chan $CHAN_ENV"
 
 PAYLOAD=`jq --arg channel "#$CHAN_ENV" --arg msg "$MSG" '. | .channel=$channel | .text=$msg' <<< '{}'`
-myCurl --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $ROCKETCHAT_USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
+curl -s --noproxy '*' --header "X-Auth-Token: $AUTH_TOKEN" --header "X-User-Id: $ROCKETCHAT_USER_ID" --header "Content-type:application/json"  $ROCKETCHAT_API_URL/chat.postMessage  -d "$PAYLOAD" | jq .
