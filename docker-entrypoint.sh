@@ -68,7 +68,7 @@ else
 fi
 
 if [[ $DEPLOY_TOOL == "helm" ]]; then
-    EMOJI_DEPLOY_TOOL=":k8s:"
+    EMOJI_DEPLOY_TOOL=":kubernetes:"
 fi
 
 DISPLAY_STATUS="[$LABEL_STATUS]($GITLAB_URL/$PROJECT_NAMESPACE/$PROJECT_NAME/builds/$CI_BUILD_ID)"
